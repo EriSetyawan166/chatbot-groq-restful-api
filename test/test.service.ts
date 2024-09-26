@@ -12,6 +12,7 @@ export class TestService {
                 username: 'test',
                 password: await bcrypt.hash('test', 10),
                 name: 'test',
+                token: 'test',
             }
         })
     }

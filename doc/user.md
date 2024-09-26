@@ -119,3 +119,18 @@ Response Body (Success) :
   }
 }
 ```
+
+## Logout User
+
+Endpoint : DELETE /api/users/current
+
+Headers :
+- Authorization: token
+
+Response Body (Success) :
+
+```json
+{
+  "data" : true
+}
+```
