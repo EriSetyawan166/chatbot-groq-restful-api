@@ -10,3 +10,8 @@ export class CreateUserRequest {
     password: string;
     name: string;
 }
+
+export class LoginUserRequest {
+    username: string;
+    password: string;
+}
