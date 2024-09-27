@@ -119,7 +119,6 @@ Response Body :
     "id" : 1,
     "title" : "new chat updated",
     "is_active" : "true",
-    "created_at" : "2024-01-01T00:00:00.000Z", 
   } 
 }
 ```
