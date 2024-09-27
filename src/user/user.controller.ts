@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, Patch, Post } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CreateUserRequest, LoginUserRequest, UpdateUserRequest, UserResponse } from "../model/user.model";
 import { WebResponse } from "../model/web.model";
@@ -50,5 +50,14 @@ export class UserController {
         return {
             data: result,
         };
+    };
+
+    @Delete('/current')
+    @HttpCode(200)
+    async logout(@Auth() user: User):Promise<WebResponse<boolean>> {
+        await this.userService.logout(user);
+        return {
+            data: true,
+        }
     };
 }
