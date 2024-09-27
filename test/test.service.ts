@@ -46,6 +46,27 @@ export class TestService {
         })
     }
 
+    async create20ChatSession() {
+        for (let i = 2; i <= 20; i++) {
+            const title = `test${i}`;
+    
+            await this.prismaService.chatSession.create({
+                data: {
+                    title: title,
+                    user: {
+                        connect: { username: 'test' },
+                    },
+                },
+            });
+
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+    
+        console.log('20 chat sessions created with delay');
+    }
+    
+    
+
     async deleteChatSession() {
         await this.prismaService.chatSession.deleteMany({})
     }

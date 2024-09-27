@@ -1,8 +1,8 @@
-import { Body, Controller, HttpCode, Post } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, ParseIntPipe, Post, Query } from "@nestjs/common";
 import { ChatSessionService } from "./chat-session.service";
 import { Auth } from "../common/auth.decorator";
 import { User } from "@prisma/client";
-import { ChatSessionResponse, CreateChatSessionRequest } from "../model/chat-session.model";
+import { ChatSessionResponse, CreateChatSessionRequest, ListChatSessionRequest } from "../model/chat-session.model";
 import { WebResponse } from "../model/web.model";
 
 @Controller('/api/chat-sessions')
@@ -19,5 +19,20 @@ export class ChatSessionController {
         return {
             data: result,
         }
+    }
+
+    @Get()
+    @HttpCode(200)
+    async list(
+        @Auth() user: User,
+        @Query('offset', new ParseIntPipe({optional:true})) offset?: number,
+        @Query('limit', new ParseIntPipe({optional:true})) limit?: number,
+    ): Promise<WebResponse<ChatSessionResponse[]>> {
+        const request: ListChatSessionRequest = {
+            offset: offset || 0,
+            limit: limit ||10,
+        }
+        const result = await this.chatSessionService.list(user, request);
+        return result;
     }
 }

@@ -52,7 +52,7 @@ Response Body (Failed Not Found) :
 }
 ```
 
-## Get Chat Session
+## List Chat Session
 
 Endpoint : GET /api/chat_sessions/:sessionId
 
@@ -63,12 +63,20 @@ Response Body :
 
 ```json
 {
-  "data" : {
-    "id" : 1,
-    "title" : "new chat",
-    "is_active" : "true",
-    "created_at" : "2024-01-01T00:00:00.000Z", 
-  } 
+  "data" : [
+    {
+      "id" : 1,
+      "title" : "new chat",
+      "is_active" : "true",
+      "created_at" : "2024-01-01T00:00:00.000Z", 
+    }, 
+    {
+      "id" : 2,
+      "title" : "new chat",
+      "is_active" : "true",
+      "created_at" : "2024-01-01T00:00:00.000Z", 
+    }, 
+  ]
 }
 ```
 

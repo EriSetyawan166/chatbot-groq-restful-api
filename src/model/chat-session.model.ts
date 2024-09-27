@@ -7,3 +7,8 @@ export class ChatSessionResponse {
 export class CreateChatSessionRequest{
     title: string;
 }
+
+export class ListChatSessionRequest{
+    offset: number;
+    limit: number;
+}

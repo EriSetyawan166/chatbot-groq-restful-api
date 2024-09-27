@@ -80,5 +80,70 @@ describe('ChatSessionController', () => {
                 }
             })
         })
+    })
+  
+    describe('GET /api/chat-sessions', () => {
+      beforeEach(async () => {
+          await testService.deleteUser();
+          await testService.deleteChatSession();
+          await testService.createUser();
+          await testService.createChatSession();
       })
+  
+      it('Should be rejected if request is invalid', async () => {
+        const response = await request(app.getHttpServer())
+          .post('/api/chat-sessions')
+          .set('Authorization', 'test')
+          .query({
+            offset: "0",
+            limit: "10",
+          })
+        logger.info(response.body);
+        expect(response.status).toBe(400);
+        expect(response.body.errors).toBeDefined();
+      })
+
+      it('Should be rejected if token is invalid', async () => {
+          const response = await request(app.getHttpServer())
+            .post('/api/chat-sessions')
+            .set('Authorization', 'wrong')
+            .query({
+              offset: 0,
+              limit: 10,
+            })
+          logger.info(response.body);
+          expect(response.status).toBe(401);
+          expect(response.body.errors).toBeDefined();
+        })
+  
+      it('Should be able to get list chat session first page', async () => {
+          await testService.create20ChatSession();
+          const response = await request(app.getHttpServer())
+              .get('/api/chat-sessions')
+              .set('Authorization', 'test')
+              .query({
+                offset: 0,
+                limit: 10,
+              })
+          logger.info(response.body);
+          expect(response.status).toBe(200);
+          expect(response.body.data.length).toBe(10);
+          expect(response.body.data[response.body.data.length - 1].title).toBe('test10');
+      })
+
+      it('Should be able to get list chat session second page', async () => {
+        await testService.create20ChatSession();
+        const response = await request(app.getHttpServer())
+            .get('/api/chat-sessions')
+            .set('Authorization', 'test')
+            .query({
+              offset: 10,
+              limit: 10,
+            })
+        logger.info(response.body);
+        expect(response.status).toBe(200);
+        expect(response.body.data.length).toBe(10);
+        expect(response.body.data[response.body.data.length - 1].title).toBe('test20');
+    })
+    })
 });

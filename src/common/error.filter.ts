@@ -12,7 +12,7 @@ export class ErrorFilter implements ExceptionFilter{
             });
         } else if (exception instanceof ZodError) {
             response.status(400).json({
-                errors: 'Validation Error',
+                errors: `Validation Error ${exception.message}`,
             });
         } else {
             response.status(500).json({
