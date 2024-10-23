@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, ParseIntPipe, Post, Query, Put, Param } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, ParseIntPipe, Post, Query, Put, Param, Delete } from "@nestjs/common";
 import { ChatSessionService } from "./chat-session.service";
 import { Auth } from "../common/auth.decorator";
 import { User } from "@prisma/client";
@@ -47,6 +47,18 @@ export class ChatSessionController {
         const result = await this.chatSessionService.update(user, request);
         return {
             data: result,
+        }
+    }
+
+    @Delete('/:chatSessionId')
+    @HttpCode(200)
+    async remove(
+        @Auth() user: User,
+        @Param('chatSessionId', ParseIntPipe) chatSessionId: number,
+    ): Promise<WebResponse<boolean>> {
+        await this.chatSessionService.remove(user, chatSessionId);
+        return {
+            data: true,
         }
     }
 }

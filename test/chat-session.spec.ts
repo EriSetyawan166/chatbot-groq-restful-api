@@ -189,5 +189,43 @@ describe('ChatSessionController', () => {
           expect(response.status).toBe(200);
           expect(response.body.data.title).toBe('updated');
       })
-  })
+    })
+  
+    describe('DELETE /api/chat-sessions/:chatSessionId', () => {
+      beforeEach(async () => {
+          await testService.deleteUser();
+          await testService.deleteChatSession();
+          await testService.createUser();
+          await testService.createChatSession();
+      })
+  
+      it('Should be rejected if request is invalid', async () => {
+        const chatSession = await testService.getFirstChatSession();
+        const response = await request(app.getHttpServer())
+          .delete(`/api/chat-sessions/${chatSession.id + 1}`)
+          .set('Authorization', 'test')
+
+        expect(response.status).toBe(404);
+        expect(response.body.errors).toBeDefined();
+      })
+
+      it('Should be rejected if token is invalid', async () => {
+          const chatSession = await testService.getFirstChatSession();
+          const response = await request(app.getHttpServer())
+            .delete(`/api/chat-sessions/${chatSession.id}`)
+            .set('Authorization', 'wrong')
+
+          expect(response.status).toBe(401);
+          expect(response.body.errors).toBeDefined();
+        })
+  
+      it('Should be able to remove chat session', async () => {
+        const chatSession = await testService.getFirstChatSession();
+          const response = await request(app.getHttpServer())
+              .delete(`/api/chat-sessions/${chatSession.id}`)
+              .set('Authorization', 'test') 
+          expect(response.status).toBe(200);
+          expect(response.body.data).toBe(true);
+      })
+    })
 });

@@ -82,6 +82,21 @@ export class ChatSessionService {
         
     }
 
+    async remove(user: User, chatSessionId: number): Promise<ChatSessionResponse> {
+        const chatSession = await this.checkChatSessionMustExists(chatSessionId, user.id);
+
+        await this.prismaService.chatSession.delete({
+            where: {
+                id: chatSessionId,
+            },
+        });
+
+        return {
+            title: chatSession.title,
+            is_active: chatSession.is_active,
+        }
+    }
+
     async checkChatSessionMustExists(chatSessoinId: number, userId: number): Promise<ChatSession> {
         const chatSession = await this.prismaService.chatSession.findFirst({
             where: {
@@ -91,7 +106,7 @@ export class ChatSessionService {
         });
 
         if (!chatSession) {
-            throw new HttpException('Contact is not found', 404);
+            throw new HttpException('Chat Session is not found', 404);
         };
 
         return chatSession;
