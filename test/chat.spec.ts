@@ -24,7 +24,7 @@ describe('ChatController', () => {
         testService = app.get(TestService);
     });
 
-    describe('POST /api/chats', () => {
+    describe('POST /api/chat-sessions/:chatSessionId/chat', () => {
         beforeEach(async () => {
             await testService.deleteUser();
             await testService.deleteChatSession();
@@ -35,12 +35,11 @@ describe('ChatController', () => {
         it('Should be rejected if request is invalid', async () => {
           const chatSession = await testService.getFirstChatSession();
           const response = await request(app.getHttpServer())
-            .post(`/api/chats/${chatSession.id}`)
+            .post(`/api/chat-sessions/${chatSession.id}/chat`)
             .set('Authorization', 'test')
             .send({
               message: '',
             })
-
           expect(response.status).toBe(400);
           expect(response.body.errors).toBeDefined();
         })
@@ -48,7 +47,7 @@ describe('ChatController', () => {
         it('Should be rejected if token is invalid', async () => {
             const chatSession = await testService.getFirstChatSession();
             const response = await request(app.getHttpServer())
-              .post(`/api/chats/${chatSession.id}`)
+              .post(`/api/chat-sessions/${chatSession.id}/chat`)
               .set('Authorization', 'wrong')
               .send({
                 message: 'testing',
@@ -61,7 +60,7 @@ describe('ChatController', () => {
         it('Should be able to create chat', async () => {
             const chatSession = await testService.getFirstChatSession();
             const response = await request(app.getHttpServer())
-                .post(`/api/chats/${chatSession.id}`)
+                .post(`/api/chat-sessions/${chatSession.id}/chat`)
                 .set('Authorization', 'test')
                 .send({
                     message: 'hello',

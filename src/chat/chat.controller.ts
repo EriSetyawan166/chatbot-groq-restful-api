@@ -4,11 +4,11 @@ import { ChatResponse, CreateChatRequest } from "../model/chat.model";
 import { WebResponse } from "src/model/web.model";
 import { Auth } from "../common/auth.decorator";
 import { User } from "@prisma/client";
-@Controller('/api/chats')
+@Controller('/api/chat-sessions/:chatSessionId/chat')
 export class ChatController {
     constructor(private chatService: ChatService) { }
     
-    @Post('/:chatSessionId')
+    @Post()
     @HttpCode(200)
     async create(
         @Auth() user: User,
