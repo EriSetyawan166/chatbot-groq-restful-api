@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 import Groq from 'groq-sdk';
 import * as dotenv from 'dotenv';
 
@@ -6,13 +6,13 @@ dotenv.config();
 
 @Injectable()
 export class GroqService {
-    private readonly groqClient: any;
+  private readonly groqClient: any;
 
-    constructor() {
-        this.groqClient = new Groq({ apiKey: process.env.GROQ_API_KEY });
-    }
+  constructor() {
+    this.groqClient = new Groq({ apiKey: process.env.GROQ_API_KEY });
+  }
 
-    async getChatCompletion(message: string): Promise<any> {
+  async getChatCompletion(message: string): Promise<any> {
     return this.groqClient.chat.completions.create({
       messages: [
         {
