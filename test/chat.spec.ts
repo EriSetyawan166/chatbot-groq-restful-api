@@ -82,4 +82,41 @@ describe('ChatController', () => {
             );
         })
     })
+
+    describe('GET /api/chat-sessions/:chatSessionId/chat', () => {
+        beforeEach(async () => {
+            await testService.deleteUser();
+            await testService.deleteChatSession();
+            await testService.createUser();
+            await testService.createChatSession();
+        })
+    
+        it('Should be rejected if request is invalid', async () => {
+          const chatSession = await testService.getFirstChatSession();
+          const response = await request(app.getHttpServer())
+            .get(`/api/chat-sessions/${chatSession.id+1}/chat`)
+            .set('Authorization', 'test')
+          expect(response.status).toBe(404);
+          expect(response.body.errors).toBeDefined();
+        })
+  
+        it('Should be rejected if token is invalid', async () => {
+            const chatSession = await testService.getFirstChatSession();
+            const response = await request(app.getHttpServer())
+                .get(`/api/chat-sessions/${chatSession.id}/chat`)
+                .set('Authorization', 'wrong')
+  
+            expect(response.status).toBe(401);
+            expect(response.body.errors).toBeDefined();
+          })
+    
+        it('Should be able to get list chat', async () => {
+            const chatSession = await testService.getFirstChatSession();
+            const response = await request(app.getHttpServer())
+                .get(`/api/chat-sessions/${chatSession.id}/chat`)
+                .set('Authorization', 'test')
+            expect(response.status).toBe(200);
+        })
+  
+      })
 })

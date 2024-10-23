@@ -57,5 +57,27 @@ export class ChatService{
               },
             ],
           };
-    }
+    };
+    
+    async get(user: User, chatSessionId: number): Promise<WebResponse<ChatResponse[]>> {
+      const getRequest = await this.validationService.validate(chatValidation.GET, { session_id: chatSessionId });
+      const test = await this.chatSessionService.checkChatSessionMustExists(getRequest.session_id, user.id);
+      const result = await this.prismaService.chat.findMany({
+        where: {
+          session_id: getRequest.session_id,
+        },
+        orderBy: {
+          created_at: 'asc',
+        },
+      });
+
+      return {
+        data: result.map(chat => ({
+          id: chat.id,
+          sender: chat.sender,
+          message: chat.message,
+          created_at: chat.created_at.toISOString(),
+        })),
+      }
+    };
 }

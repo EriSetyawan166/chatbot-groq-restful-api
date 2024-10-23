@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Param, Post, ParseIntPipe } from "@nestjs/common";
+import { Body, Controller, HttpCode, Param, Post, ParseIntPipe, Get } from "@nestjs/common";
 import { ChatService } from "./chat.service";
 import { ChatResponse, CreateChatRequest } from "../model/chat.model";
 import { WebResponse } from "src/model/web.model";
@@ -17,6 +17,16 @@ export class ChatController {
     ): Promise<WebResponse<ChatResponse[]>> {
         request.session_id = chatSessionId;
         const result = await this.chatService.create(user, request);
+        return result
+    }
+
+    @Get()
+    @HttpCode(200)
+    async get(
+        @Auth() user: User,
+        @Param('chatSessionId', ParseIntPipe) chatSessionId: number,
+    ): Promise<WebResponse<ChatResponse[]>> {
+        const result = await this.chatService.get(user, chatSessionId);
         return result
     }
 }
