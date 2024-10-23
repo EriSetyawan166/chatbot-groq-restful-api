@@ -11,6 +11,7 @@ Request Body :
 
 ```json
 {
+  "session_id" : "1",
   "sender" : "user",
   "message" : "Hello Bot",
 }

@@ -25,6 +25,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@prisma/client": "^5.20.0",
     "bcrypt": "^5.1.1",
+    "groq-sdk": "^0.7.0",
     "nest-winston": "^1.9.7",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
