@@ -72,8 +72,8 @@ Response Body :
     }, 
     {
       "id" : 2,
-      "title" : "new chat",
-      "is_active" : "true",
+      "title" : "new chat2",
+      "is_active" : "false",
       "created_at" : "2024-01-01T00:00:00.000Z", 
     }, 
   ]
@@ -117,7 +117,7 @@ Request Body :
 {
   "title" : "new chat updated",
 }
-```
+``` 
 
 Response Body :
 

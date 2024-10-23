@@ -39,7 +39,7 @@ describe('ChatSessionController', () => {
             .send({
               title: '',
             })
-          logger.info(response.body);
+
           expect(response.status).toBe(400);
           expect(response.body.errors).toBeDefined();
         })
@@ -51,7 +51,7 @@ describe('ChatSessionController', () => {
               .send({
                 title: 'test',
               })
-            logger.info(response.body);
+  
             expect(response.status).toBe(401);
             expect(response.body.errors).toBeDefined();
           })
@@ -63,18 +63,16 @@ describe('ChatSessionController', () => {
                 .send({
                     title: 'test',
                 })
-            logger.info(response.body);
+  
             expect(response.status).toBe(200);
             expect(response.body.data.title).toBe('test');
             expect(response.body.data.is_active).toBe(true);
             expect(response.body.data.created_at).toBeDefined();
 
             const createdSessionId = response.body.data.id;
-            logger.info(createdSessionId);
             const allChatSessions = await testService.getAllChatSessionOldOrdered();
             const olderChatSessions = allChatSessions.slice(0, -1); 
             olderChatSessions.forEach(session => {
-                logger.info(session.id);
                 if (session.id !== createdSessionId) {
                     expect(session.is_active).toBe(false);
                 }
@@ -98,7 +96,6 @@ describe('ChatSessionController', () => {
             offset: "0",
             limit: "10",
           })
-        logger.info(response.body);
         expect(response.status).toBe(400);
         expect(response.body.errors).toBeDefined();
       })
@@ -111,7 +108,7 @@ describe('ChatSessionController', () => {
               offset: 0,
               limit: 10,
             })
-          logger.info(response.body);
+
           expect(response.status).toBe(401);
           expect(response.body.errors).toBeDefined();
         })
@@ -125,7 +122,7 @@ describe('ChatSessionController', () => {
                 offset: 0,
                 limit: 10,
               })
-          logger.info(response.body);
+
           expect(response.status).toBe(200);
           expect(response.body.data.length).toBe(10);
           expect(response.body.data[response.body.data.length - 1].title).toBe('test10');
@@ -140,10 +137,57 @@ describe('ChatSessionController', () => {
               offset: 10,
               limit: 10,
             })
-        logger.info(response.body);
         expect(response.status).toBe(200);
         expect(response.body.data.length).toBe(10);
         expect(response.body.data[response.body.data.length - 1].title).toBe('test20');
     })
     })
+  
+    describe('PUT /api/chat-sessions/:chatSessionId', () => {
+      beforeEach(async () => {
+          await testService.deleteUser();
+          await testService.deleteChatSession();
+          await testService.createUser();
+          await testService.createChatSession();
+      })
+  
+      it('Should be rejected if request is invalid', async () => {
+        const chatSession = await testService.getFirstChatSession();
+        const response = await request(app.getHttpServer())
+          .put(`/api/chat-sessions/${chatSession.id}`)
+          .set('Authorization', 'test')
+          .send({
+            title: '',
+          })
+
+        expect(response.status).toBe(400);
+        expect(response.body.errors).toBeDefined();
+      })
+
+      it('Should be rejected if token is invalid', async () => {
+          const chatSession = await testService.getFirstChatSession();
+          const response = await request(app.getHttpServer())
+            .put(`/api/chat-sessions/${chatSession.id}`)
+            .set('Authorization', 'wrong')
+            .send({
+              title: 'berubah',
+            })
+
+          expect(response.status).toBe(401);
+          expect(response.body.errors).toBeDefined();
+        })
+  
+      it('Should be able to update chat session', async () => {
+          const chatSession = await testService.getFirstChatSession();
+          const response = await request(app.getHttpServer())
+              .put(`/api/chat-sessions/${chatSession.id}`)
+              .set('Authorization', 'test')
+              .send({
+                  title: 'updated',
+              })
+
+          expect(response.status).toBe(200);
+          expect(response.body.data.title).toBe('updated');
+      })
+  })
 });

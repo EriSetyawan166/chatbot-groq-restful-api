@@ -1,8 +1,8 @@
-import { Body, Controller, Get, HttpCode, ParseIntPipe, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, ParseIntPipe, Post, Query, Put, Param } from "@nestjs/common";
 import { ChatSessionService } from "./chat-session.service";
 import { Auth } from "../common/auth.decorator";
 import { User } from "@prisma/client";
-import { ChatSessionResponse, CreateChatSessionRequest, ListChatSessionRequest } from "../model/chat-session.model";
+import { ChatSessionResponse, CreateChatSessionRequest, ListChatSessionRequest, UpdateChatSessionRequest } from "../model/chat-session.model";
 import { WebResponse } from "../model/web.model";
 
 @Controller('/api/chat-sessions')
@@ -34,5 +34,19 @@ export class ChatSessionController {
         }
         const result = await this.chatSessionService.list(user, request);
         return result;
+    }
+
+    @Put('/:chatSessionId')
+    @HttpCode(200)
+    async update(
+        @Auth() user: User,
+        @Param('chatSessionId', ParseIntPipe) chatSessionId: number,
+        @Body() request: UpdateChatSessionRequest,
+    ): Promise<WebResponse<ChatSessionResponse>> {
+        request.id = chatSessionId;
+        const result = await this.chatSessionService.update(user, request);
+        return {
+            data: result,
+        }
     }
 }

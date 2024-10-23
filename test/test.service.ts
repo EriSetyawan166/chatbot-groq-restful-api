@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../src/common/prisma.service";
 import * as bcrypt from 'bcrypt';
 import { ChatSessionResponse } from "src/model/chat-session.model";
-import { ChatSession } from "@prisma/client";
+import { ChatSession, User } from "@prisma/client";
 
 @Injectable()
 export class TestService {
@@ -34,6 +34,22 @@ export class TestService {
             },
         })
     }
+
+    async getFirstChatSession(): Promise<ChatSession | null> {
+        return this.prismaService.chatSession.findFirst({
+            orderBy: {
+                created_at: 'asc',
+            },
+        });
+    }
+
+    async getUser(): Promise<User> {
+        return await this.prismaService.user.findUnique({
+          where: {
+            username: 'test',
+          },
+        });
+      }
 
     async createChatSession() {
         await this.prismaService.chatSession.create({

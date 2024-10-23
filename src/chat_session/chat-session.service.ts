@@ -1,7 +1,7 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { HttpException, Inject, Injectable } from "@nestjs/common";
 import { PrismaService } from "../common/prisma.service";
-import { User } from "@prisma/client";
-import { ChatSessionResponse, CreateChatSessionRequest, ListChatSessionRequest } from "../model/chat-session.model";
+import { ChatSession, User } from "@prisma/client";
+import { ChatSessionResponse, CreateChatSessionRequest, ListChatSessionRequest, UpdateChatSessionRequest } from "../model/chat-session.model";
 import { ValidationService } from "../common/validation.service";
 import { ChatSessionValidation } from "./chat-session.validation";
 import { WebResponse } from "src/model/web.model";
@@ -42,8 +42,6 @@ export class ChatSessionService {
     }
 
     async list(user: User, request: ListChatSessionRequest): Promise<WebResponse<ChatSessionResponse[]>> {
-        this.logger.debug('Received ListChatSessionRequest', { request });
-
         const listChatSessionRequest: ListChatSessionRequest = this.validationService.validate(ChatSessionValidation.LIST, request);
         
         const chatSessions = await this.prismaService.chatSession.findMany({
@@ -64,5 +62,38 @@ export class ChatSessionService {
                 limit: listChatSessionRequest.limit,
             }
         }
+    }
+
+    async update(user: User, request: UpdateChatSessionRequest): Promise<ChatSessionResponse>{
+        const UpdateChatSessionRequest: UpdateChatSessionRequest = this.validationService.validate(ChatSessionValidation.UPDATE, request);
+
+        let chatSession = await this.checkChatSessionMustExists(UpdateChatSessionRequest.id, user.id);
+        chatSession = await this.prismaService.chatSession.update({
+            where: {
+                id: chatSession.id
+            },
+            data: UpdateChatSessionRequest,
+        });
+
+        return {
+            title: chatSession.title,
+            is_active: chatSession.is_active,
+        }
+        
+    }
+
+    async checkChatSessionMustExists(chatSessoinId: number, userId: number): Promise<ChatSession> {
+        const chatSession = await this.prismaService.chatSession.findFirst({
+            where: {
+                id: chatSessoinId,
+                user_id: userId
+            },
+        });
+
+        if (!chatSession) {
+            throw new HttpException('Contact is not found', 404);
+        };
+
+        return chatSession;
     }
 }

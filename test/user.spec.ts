@@ -37,7 +37,6 @@ describe('UserController', () => {
           password: '',
           name: '',
         })
-      logger.info(response.body);
       expect(response.status).toBe(400);
       expect(response.body.errors).toBeDefined();
     })
@@ -50,7 +49,6 @@ describe('UserController', () => {
           password: 'test',
           name: 'test',
         })
-      logger.info(response.body);
       expect(response.status).toBe(200);
       expect(response.body.data.username).toBe('test');
       expect(response.body.data.name).toBe('test');
@@ -66,7 +64,6 @@ describe('UserController', () => {
           password: 'test',
           name: 'test',
         })
-      logger.info(response.body);
       expect(response.status).toBe(400);
       expect(response.body.errors).toBeDefined();
     })
@@ -74,7 +71,7 @@ describe('UserController', () => {
 
   describe('POST /api/users/login', () => {
     beforeEach(async () => {
-      await testService.deleteUser();
+      await testService.deleteUser(); 
       await testService.createUser();
     })
 
@@ -85,7 +82,6 @@ describe('UserController', () => {
           username: '',
           password: '',
         })
-      logger.info(response.body);
       expect(response.status).toBe(400);
       expect(response.body.errors).toBeDefined();
     })
@@ -97,7 +93,6 @@ describe('UserController', () => {
           username: 'test',
           password: 'test',
         })
-      logger.info(response.body);
       expect(response.status).toBe(200);
       expect(response.body.data.username).toBe('test');
       expect(response.body.data.name).toBe('test');
@@ -105,27 +100,23 @@ describe('UserController', () => {
     })
 
     it('Should be rejected if username wrong', async () => {
-      await testService.createUser();
       const response = await request(app.getHttpServer())
         .post('/api/users/login')
         .send({
           username: 'wrong',
           password: 'test',
         })
-      logger.info(response.body);
       expect(response.status).toBe(401);
       expect(response.body.errors).toBeDefined();
     })
 
     it('Should be rejected if password wrong', async () => {
-      await testService.createUser();
       const response = await request(app.getHttpServer())
         .post('/api/users/login')
         .send({
           username: 'test',
           password: 'wrong',
         })
-      logger.info(response.body);
       expect(response.status).toBe(401);
       expect(response.body.errors).toBeDefined();
     })
@@ -141,7 +132,6 @@ describe('UserController', () => {
       const response = await request(app.getHttpServer())
         .get('/api/users/current')
         .set('Authorization', 'wrong')
-      logger.info(response.body);
       expect(response.status).toBe(401);
       expect(response.body.errors).toBeDefined();
     })
@@ -150,7 +140,6 @@ describe('UserController', () => {
       const response = await request(app.getHttpServer())
         .get('/api/users/current')
         .set('Authorization', 'test')
-      logger.info(response.body);
       expect(response.status).toBe(200);
       expect(response.body.data.username).toBe('test');
       expect(response.body.data.name).toBe('test');
@@ -171,7 +160,6 @@ describe('UserController', () => {
           name: '',
           password: '',
         })
-      logger.info(response.body);
       expect(response.status).toBe(401);
       expect(response.body.errors).toBeDefined();
     })
@@ -184,7 +172,6 @@ describe('UserController', () => {
           name: '',
           password: '',
         })
-      logger.info(response.body);
       expect(response.status).toBe(400);
       expect(response.body.errors).toBeDefined();
     })
@@ -196,7 +183,6 @@ describe('UserController', () => {
         .send({
           name: 'test updated',
         })
-      logger.info(response.body);
       expect(response.status).toBe(200);
       expect(response.body.data.username).toBe('test');
       expect(response.body.data.name).toBe('test updated');
@@ -209,7 +195,6 @@ describe('UserController', () => {
         .send({
           password: 'updated',
         })
-      logger.info(response.body);
       expect(response.status).toBe(200);
       expect(response.body.data.username).toBe('test');
       expect(response.body.data.name).toBe('test');
@@ -220,7 +205,6 @@ describe('UserController', () => {
           username: 'test',
           password: 'updated'
         })
-      logger.info(response.body)
       expect(response.status).toBe(200);
       expect(response.body.data.username).toBe('test');
       expect(response.body.data.name).toBe('test');
@@ -238,7 +222,6 @@ describe('UserController', () => {
       const response = await request(app.getHttpServer())
         .delete('/api/users/current')
         .set('Authorization', 'wrong')
-      logger.info(response.body);
       expect(response.status).toBe(401);
       expect(response.body.errors).toBeDefined();
     })
@@ -247,10 +230,11 @@ describe('UserController', () => {
       const response = await request(app.getHttpServer())
         .delete('/api/users/current')
         .set('Authorization', 'test')
-      logger.info(response.body);
       expect(response.status).toBe(200);
-      expect(response.body.data.username).toBe('test');
-      expect(response.body.data.name).toBe('test');
+      expect(response.body.data).toBe(true);
+
+      const user = await testService.getUser();
+      expect(user.token).toBeNull();
     })
   })
 
